@@ -50,7 +50,7 @@ export default {
   data() {
     return {
       router: useRouter(),
-      mapboxAPIKey:'',
+      mapboxAPIKey: '',
       mapBoxBaseUrl: "https://api.mapbox.com/geocoding/v5/mapbox.places/",
       searchQuery: "",
       queryTimeout: null,
@@ -101,7 +101,17 @@ export default {
           this.lat = position.coords.latitude;
 
           try {
-            const city = await axios.get(`http://api.openweathermap.org/geo/1.0/reverse?lat=${this.lat}&lon=${this.lon}&limit=1&appid=${appId}`);
+            const city = await axios.get(`http://api.openweathermap.org/geo/1.0/reverse`, {
+              params: {
+                lat: this.lat,
+                lon: this.lon,
+                limit: 1,
+                appid: appId
+              },
+              headers: {
+                'Access-Control-Allow-Origin': '*'
+              }
+            });
             this.searchQuery = city.data[0].name;
             setTimeout(() => { this.previewmyLocation() }, 5000)
           }
