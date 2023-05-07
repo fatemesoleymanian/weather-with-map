@@ -50,7 +50,7 @@ export default {
   data() {
     return {
       router: useRouter(),
-      mapboxAPIKey: "pk.eyJ1Ijoiam9obmtvbWFybmlja2kiLCJhIjoiY2t5NjFzODZvMHJkaDJ1bWx6OGVieGxreSJ9.IpojdT3U3NENknF6_WhR2Q",
+      mapboxAPIKey:'',
       mapBoxBaseUrl: "https://api.mapbox.com/geocoding/v5/mapbox.places/",
       searchQuery: "",
       queryTimeout: null,
@@ -78,7 +78,7 @@ export default {
             preview: true,
           },
         });
-      }, 3000)
+      }, 5000)
 
     },
     previewmyLocation() {
@@ -94,13 +94,14 @@ export default {
 
     },
     currentCity() {
+      const appId = process.env.VUE_APP_CURRENT_LOC_API_KEY
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(async (position) => {
           this.lon = position.coords.longitude;
           this.lat = position.coords.latitude;
 
           try {
-            const city = await axios.get(`http://api.openweathermap.org/geo/1.0/reverse?lat=${this.lat}&lon=${this.lon}&limit=1&appid=eb0ed08b5e5fa33a9c9cc66ad7e2f028`);
+            const city = await axios.get(`http://api.openweathermap.org/geo/1.0/reverse?lat=${this.lat}&lon=${this.lon}&limit=1&appid=${appId}`);
             this.searchQuery = city.data[0].name;
             setTimeout(() => { this.previewmyLocation() }, 5000)
           }
@@ -117,6 +118,7 @@ export default {
       }
     },
     getSearchResults() {
+      this.mapboxAPIKey = process.env.VUE_APP_MAPBOX_API_KEY
       clearTimeout(this.queryTimeout);
       this.queryTimeout = setTimeout(async () => {
         // console.log(import.meta.env.VUE_APP_MAP_BOX_KEY)
